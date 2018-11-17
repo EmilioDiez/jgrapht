@@ -1,40 +1,55 @@
-/*
- * (C) Copyright 2005-2018, by Assaf Lehr and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -----------------
+ * PrefetchIteratorTest.java
+ * -----------------
+ * (C) Copyright 2005-2008, by Assaf Lehr and Contributors.
+ *
+ * Original Author:  Assaf Lehr
+ * Contributor(s):   -
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
  */
 package org.jgrapht.util;
 
-import org.junit.*;
-
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import junit.framework.*;
+
 
 public class PrefetchIteratorTest
+    extends TestCase
 {
-    // ~ Methods ----------------------------------------------------------------
+    //~ Methods ----------------------------------------------------------------
 
-    @Test
     public void testIteratorInterface()
     {
-        Iterator<Integer> iterator = new IterateFrom1To99();
+        Iterator iterator = new IterateFrom1To99();
         for (int i = 1; i < 100; i++) {
             assertEquals(true, iterator.hasNext());
-            assertEquals(i, iterator.next().intValue());
+            assertEquals(i, iterator.next());
         }
         assertEquals(false, iterator.hasNext());
         Exception exceptionThrown = null;
@@ -46,13 +61,12 @@ public class PrefetchIteratorTest
         assertTrue(exceptionThrown instanceof NoSuchElementException);
     }
 
-    @Test
     public void testEnumInterface()
     {
-        Enumeration<Integer> enumuration = new IterateFrom1To99();
+        Enumeration enumuration = new IterateFrom1To99();
         for (int i = 1; i < 100; i++) {
             assertEquals(true, enumuration.hasMoreElements());
-            assertEquals(i, enumuration.nextElement().intValue());
+            assertEquals(i, enumuration.nextElement());
         }
         assertEquals(false, enumuration.hasMoreElements());
         Exception exceptionThrown = null;
@@ -64,59 +78,61 @@ public class PrefetchIteratorTest
         assertTrue(exceptionThrown instanceof NoSuchElementException);
     }
 
-    // ~ Inner Classes ----------------------------------------------------------
+    //~ Inner Classes ----------------------------------------------------------
 
     // This test class supplies enumeration of integer from 1 till 100.
     public static class IterateFrom1To99
-        implements
-        Enumeration<Integer>,
-        Iterator<Integer>
+        implements Enumeration,
+            Iterator
     {
         private int counter = 0;
-        private PrefetchIterator<Integer> nextSupplier;
+        private PrefetchIterator nextSupplier;
 
         public IterateFrom1To99()
         {
-            nextSupplier = new PrefetchIterator<>(() -> {
-                counter++;
-                if (counter >= 100) {
-                    throw new NoSuchElementException();
-                } else {
-                    return counter;
-                }
-            });
+            nextSupplier =
+                new PrefetchIterator<Integer>(
+                    new PrefetchIterator.NextElementFunctor<Integer>() {
+                        public Integer nextElement()
+                            throws NoSuchElementException
+                        {
+                            counter++;
+                            if (counter >= 100) {
+                                throw new NoSuchElementException();
+                            } else {
+                                return new Integer(counter);
+                            }
+                        }
+                    });
         }
 
         // forwarding to nextSupplier and return its returned value
-        @Override
         public boolean hasMoreElements()
         {
             return this.nextSupplier.hasMoreElements();
         }
 
         // forwarding to nextSupplier and return its returned value
-        @Override
-        public Integer nextElement()
+        public Object nextElement()
         {
             return this.nextSupplier.nextElement();
         }
 
-        @Override
-        public Integer next()
+        public Object next()
         {
             return this.nextSupplier.next();
         }
 
-        @Override
         public boolean hasNext()
         {
             return this.nextSupplier.hasNext();
         }
 
-        @Override
         public void remove()
         {
             this.nextSupplier.remove();
         }
     }
 }
+
+// End PrefetchIteratorTest.java

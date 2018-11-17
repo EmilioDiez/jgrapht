@@ -1,50 +1,74 @@
-/*
- * (C) Copyright 2003-2018, by Barak Naveh and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* ----------------------
+ * VertexSetListener.java
+ * ----------------------
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
+ *
+ * Original Author:  Barak Naveh
+ * Contributor(s):   Christian Hammer
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 24-Jul-2003 : Initial revision (BN);
+ * 10-Aug-2003 : Adaptation to new event model (BN);
+ * 11-Mar-2004 : Made generic (CH);
+ *
  */
 package org.jgrapht.event;
 
 import java.util.*;
 
+
 /**
- * A listener that is notified when the graph's vertex set changes. It should be used when
- * <i>only</i> notifications on vertex-set changes are of interest. If all graph notifications are
- * of interest better use <code>
+ * A listener that is notified when the graph's vertex set changes. It should be
+ * used when <i>only</i> notifications on vertex-set changes are of interest. If
+ * all graph notifications are of interest better use <code>
  * GraphListener</code>.
- *
- * @param <V> the graph vertex type
  *
  * @author Barak Naveh
  * @see GraphListener
+ * @since Jul 18, 2003
  */
 public interface VertexSetListener<V>
-    extends
-    EventListener
+    extends EventListener
 {
+    
+
     /**
      * Notifies that a vertex has been added to the graph.
      *
      * @param e the vertex event.
      */
-    void vertexAdded(GraphVertexChangeEvent<V> e);
+    public void vertexAdded(GraphVertexChangeEvent<V> e);
 
     /**
      * Notifies that a vertex has been removed from the graph.
      *
      * @param e the vertex event.
      */
-    void vertexRemoved(GraphVertexChangeEvent<V> e);
+    public void vertexRemoved(GraphVertexChangeEvent<V> e);
 }
+
+// End VertexSetListener.java

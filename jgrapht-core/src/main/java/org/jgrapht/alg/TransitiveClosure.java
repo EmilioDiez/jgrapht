@@ -1,39 +1,60 @@
-/*
- * (C) Copyright 2007-2018, by Vinayak R Borkar and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* ----------------------
+ * TransitiveClosure.java
+ * ----------------------
+ * (C) Copyright 2007, by Vinayak R. Borkar.
+ *
+ * Original Author:   Vinayak R. Borkar
+ * Contributor(s):
+ *
+ * Changes
+ * -------
+ * 5-May-2007: Initial revision (VRB);
+ *
  */
 package org.jgrapht.alg;
 
-import org.jgrapht.*;
-import org.jgrapht.graph.*;
-import org.jgrapht.traverse.*;
-
 import java.util.*;
+
+import org.jgrapht.graph.*;
+
 
 /**
  * Constructs the transitive closure of the input graph.
  *
  * @author Vinayak R. Borkar
+ * @since May 5, 2007
  */
 public class TransitiveClosure
 {
+    
+
     /**
      * Singleton instance.
      */
     public static final TransitiveClosure INSTANCE = new TransitiveClosure();
+
+    
 
     /**
      * Private Constructor.
@@ -42,18 +63,18 @@ public class TransitiveClosure
     {
     }
 
+    
+
     /**
      * Computes the transitive closure of the given graph.
      *
      * @param graph - Graph to compute transitive closure for.
-     * @param <V> the graph vertex type
-     * @param <E> the graph edge type
      */
     public <V, E> void closeSimpleDirectedGraph(SimpleDirectedGraph<V, E> graph)
     {
         Set<V> vertexSet = graph.vertexSet();
 
-        Set<V> newEdgeTargets = new HashSet<>();
+        Set<V> newEdgeTargets = new HashSet<V>();
 
         // At every iteration of the outer loop, we add a path of length 1
         // between nodes that originally had a path of length 2. In the worst
@@ -95,7 +116,7 @@ public class TransitiveClosure
     }
 
     /**
-     * Computes floor($\log_2 (n)$) $+ 1$
+     * Computes floor(log_2(n)) + 1
      */
     private int computeBinaryLog(int n)
     {
@@ -109,26 +130,6 @@ public class TransitiveClosure
 
         return result;
     }
-
-    /**
-     * Computes the transitive closure of a directed acyclic graph in $O(nm)$
-     *
-     * @param graph - Graph to compute transitive closure for.
-     * @param <V> the graph vertex type
-     * @param <E> the graph edge type
-     */
-    public <V, E> void closeDirectedAcyclicGraph(DirectedAcyclicGraph<V, E> graph)
-    {
-        Deque<V> orderedVertices = new ArrayDeque<>(graph.vertexSet().size());
-        new TopologicalOrderIterator<>(graph).forEachRemaining(orderedVertices::addFirst);
-
-        for (V vertex : orderedVertices) {
-            for (V successor : Graphs.successorListOf(graph, vertex)) {
-                for (V closureVertex : Graphs.successorListOf(graph, successor)) {
-                    graph.addEdge(vertex, closureVertex);
-                }
-            }
-        }
-    }
-
 }
+
+// End TransitiveClosure.java

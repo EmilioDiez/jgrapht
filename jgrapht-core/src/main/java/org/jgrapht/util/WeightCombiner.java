@@ -1,19 +1,37 @@
-/*
- * (C) Copyright 2009-2018, by Ilya Razenshteyn and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2009, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------------
+ * WeightCombiner.java
+ * -------------------------
+ * (C) Copyright 2009-2009, by Ilya Razenshteyn
+ *
+ * Original Author:  Ilya Razenshteyn and Contributors.
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 02-Feb-2009 : Initial revision (IR);
+ *
  */
 package org.jgrapht.util;
 
@@ -22,35 +40,64 @@ package org.jgrapht.util;
  */
 public interface WeightCombiner
 {
+    
+
     /**
      * Sum of weights.
      */
-    WeightCombiner SUM = (a, b) -> a + b;
-
-    /**
-     * Multiplication of weights.
-     */
-    WeightCombiner MULT = (a, b) -> a * b;
+    public WeightCombiner SUM =
+        new WeightCombiner() {
+            public double combine(double a, double b)
+            {
+                return a + b;
+            }
+        };
 
     /**
      * Minimum weight.
      */
-    WeightCombiner MIN = Math::min;
+    public WeightCombiner MIN =
+        new WeightCombiner() {
+            public double combine(double a, double b)
+            {
+                return Math.min(a, b);
+            }
+        };
 
     /**
      * Maximum weight.
      */
-    WeightCombiner MAX = Math::max;
+    public WeightCombiner MAX =
+        new WeightCombiner() {
+            public double combine(double a, double b)
+            {
+                return Math.max(a, b);
+            }
+        };
 
     /**
      * First weight.
      */
-    WeightCombiner FIRST = (a, b) -> a;
+    public WeightCombiner FIRST =
+        new WeightCombiner() {
+            public double combine(double a, double b)
+            {
+                return a;
+            }
+        };
 
     /**
      * Second weight.
      */
-    WeightCombiner SECOND = (a, b) -> b;
+    public WeightCombiner SECOND =
+        new WeightCombiner() {
+            public double combine(double a, double b)
+            {
+                return b;
+            }
+        };
+
+    
 
     /**
      * Combines two weights.
@@ -62,3 +109,5 @@ public interface WeightCombiner
      */
     double combine(double a, double b);
 }
+
+// End WeightCombiner.java

@@ -1,47 +1,66 @@
-/*
- * (C) Copyright 2003-2018, by Barak Naveh and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -----------------------------
+ * TraversalListenerAdapter.java
+ * -----------------------------
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
+ *
+ * Original Author:  Barak Naveh
+ * Contributor(s):   Christian Hammer
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 06-Aug-2003 : Initial revision (BN);
+ * 11-Aug-2003 : Adaptation to new event model (BN);
+ * 11-Mar-2004 : Made generic (CH);
+ *
  */
 package org.jgrapht.event;
 
 /**
- * An empty do-nothing implementation of the {@link TraversalListener} interface used for
- * subclasses.
- * 
- * @param <V> the graph vertex type
- * @param <E> the graph edge type
+ * An empty do-nothing implementation of the {@link TraversalListener} interface
+ * used for subclasses.
  *
  * @author Barak Naveh
+ * @since Aug 6, 2003
  */
 public class TraversalListenerAdapter<V, E>
-    implements
-    TraversalListener<V, E>
+    implements TraversalListener<V, E>
 {
+    
+
     /**
      * @see TraversalListener#connectedComponentFinished(ConnectedComponentTraversalEvent)
      */
-    @Override
-    public void connectedComponentFinished(ConnectedComponentTraversalEvent e)
+    public void connectedComponentFinished(
+        ConnectedComponentTraversalEvent e)
     {
     }
 
     /**
      * @see TraversalListener#connectedComponentStarted(ConnectedComponentTraversalEvent)
      */
-    @Override
     public void connectedComponentStarted(ConnectedComponentTraversalEvent e)
     {
     }
@@ -49,15 +68,13 @@ public class TraversalListenerAdapter<V, E>
     /**
      * @see TraversalListener#edgeTraversed(EdgeTraversalEvent)
      */
-    @Override
-    public void edgeTraversed(EdgeTraversalEvent<E> e)
+    public void edgeTraversed(EdgeTraversalEvent<V, E> e)
     {
     }
 
     /**
      * @see TraversalListener#vertexTraversed(VertexTraversalEvent)
      */
-    @Override
     public void vertexTraversed(VertexTraversalEvent<V> e)
     {
     }
@@ -65,8 +82,9 @@ public class TraversalListenerAdapter<V, E>
     /**
      * @see TraversalListener#vertexFinished(VertexTraversalEvent)
      */
-    @Override
     public void vertexFinished(VertexTraversalEvent<V> e)
     {
     }
 }
+
+// End TraversalListenerAdapter.java

@@ -1,58 +1,77 @@
-/*
- * (C) Copyright 2003-2018, by Liviu Rau and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* ------------------------------
+ * AbstractGraphIteratorTest.java
+ * ------------------------------
+ * (C) Copyright 2003-2008, by Liviu Rau and Contributors.
+ *
+ * Original Author:  Liviu Rau
+ * Contributor(s):   Barak Naveh
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 30-Jul-2003 : Initial revision (LR);
+ * 06-Aug-2003 : Test traversal listener & extract a shared superclass (BN);
+ *
  */
 package org.jgrapht.traverse;
 
 import org.jgrapht.*;
 import org.jgrapht.event.*;
 import org.jgrapht.graph.*;
-import org.junit.*;
 
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * A basis for testing {@link org.jgrapht.traverse.BreadthFirstIterator} and
  * {@link org.jgrapht.traverse.DepthFirstIterator} classes.
  *
  * @author Liviu Rau
+ * @since Jul 30, 2003
  */
 public abstract class AbstractGraphIteratorTest
+    extends EnhancedTestCase
 {
-    // ~ Instance fields --------------------------------------------------------
+    //~ Instance fields --------------------------------------------------------
 
-    StringBuilder result;
+    StringBuffer result;
+
+    //~ Methods ----------------------------------------------------------------
 
     /**
      * .
      */
-    @Test
     public void testDirectedGraph()
     {
+        result = new StringBuffer();
 
-        Graph<String, DefaultWeightedEdge> graph = createDirectedGraph();
-        AbstractGraphIterator<String, DefaultWeightedEdge> iterator = createIterator(graph, "1");
+        DirectedGraph<String, DefaultEdge> graph = createDirectedGraph();
 
-        doDirectedGraphTest(iterator);
-    }
+        AbstractGraphIterator<String, DefaultEdge> iterator =
+            createIterator(graph, "1");
+        MyTraversalListener listener = new MyTraversalListener();
+        iterator.addTraversalListener(listener);
 
-    protected void collectResult(Iterator<String> iterator, StringBuilder result)
-    {
         while (iterator.hasNext()) {
             result.append(iterator.next());
 
@@ -60,17 +79,7 @@ public abstract class AbstractGraphIteratorTest
                 result.append(',');
             }
         }
-    }
 
-    public void doDirectedGraphTest(AbstractGraphIterator<String, DefaultWeightedEdge> iterator)
-    {
-
-        result = new StringBuilder();
-
-        MyTraversalListener<DefaultWeightedEdge> listener = new MyTraversalListener<>();
-        iterator.addTraversalListener(listener);
-
-        collectResult(iterator, result);
         assertEquals(getExpectedStr2(), result.toString());
 
         assertEquals(getExpectedFinishString(), listener.getFinishString());
@@ -85,10 +94,11 @@ public abstract class AbstractGraphIteratorTest
         return "";
     }
 
-    Graph<String, DefaultWeightedEdge> createDirectedGraph()
+    DirectedGraph<String, DefaultEdge> createDirectedGraph()
     {
-        Graph<String, DefaultWeightedEdge> graph =
-            new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+        DirectedGraph<String, DefaultEdge> graph =
+            new DefaultDirectedWeightedGraph<String, DefaultEdge>(
+                DefaultWeightedEdge.class);
 
         //
         String v1 = "1";
@@ -113,9 +123,9 @@ public abstract class AbstractGraphIteratorTest
 
         graph.addVertex("orphan");
 
-        // NOTE: set weights on some of the edges to test traversals like
-        // ClosestFirstIterator where it matters. For other traversals, it
-        // will be ignored. Rely on the default edge weight being 1.
+        // NOTE:  set weights on some of the edges to test traversals like
+        // ClosestFirstIterator where it matters.  For other traversals, it
+        // will be ignored.  Rely on the default edge weight being 1.
         graph.addEdge(v1, v2);
         Graphs.addEdge(graph, v1, v3, 100);
         Graphs.addEdge(graph, v2, v4, 1000);
@@ -132,19 +142,19 @@ public abstract class AbstractGraphIteratorTest
         return graph;
     }
 
-    abstract AbstractGraphIterator<String, DefaultWeightedEdge> createIterator(
-        Graph<String, DefaultWeightedEdge> g, String startVertex);
+    abstract AbstractGraphIterator<String, DefaultEdge> createIterator(
+        DirectedGraph<String, DefaultEdge> g,
+        String startVertex);
 
-    // ~ Inner Classes ----------------------------------------------------------
+    //~ Inner Classes ----------------------------------------------------------
 
     /**
      * Internal traversal listener.
      *
      * @author Barak Naveh
      */
-    private class MyTraversalListener<E>
-        implements
-        TraversalListener<String, E>
+    private class MyTraversalListener
+        implements TraversalListener<String, DefaultEdge>
     {
         private int componentNumber = 0;
         private int numComponentVertices = 0;
@@ -154,8 +164,8 @@ public abstract class AbstractGraphIteratorTest
         /**
          * @see TraversalListener#connectedComponentFinished(ConnectedComponentTraversalEvent)
          */
-        @Override
-        public void connectedComponentFinished(ConnectedComponentTraversalEvent e)
+        public void connectedComponentFinished(
+            ConnectedComponentTraversalEvent e)
         {
             switch (componentNumber) {
             case 1:
@@ -171,7 +181,7 @@ public abstract class AbstractGraphIteratorTest
                 break;
 
             default:
-                Assert.fail("Should not get here.");
+                assertFalse();
 
                 break;
             }
@@ -182,8 +192,8 @@ public abstract class AbstractGraphIteratorTest
         /**
          * @see TraversalListener#connectedComponentStarted(ConnectedComponentTraversalEvent)
          */
-        @Override
-        public void connectedComponentStarted(ConnectedComponentTraversalEvent e)
+        public void connectedComponentStarted(
+            ConnectedComponentTraversalEvent e)
         {
             componentNumber++;
         }
@@ -191,8 +201,7 @@ public abstract class AbstractGraphIteratorTest
         /**
          * @see TraversalListener#edgeTraversed(EdgeTraversalEvent)
          */
-        @Override
-        public void edgeTraversed(EdgeTraversalEvent<E> e)
+        public void edgeTraversed(EdgeTraversalEvent<String, DefaultEdge> e)
         {
             // to be tested...
         }
@@ -200,7 +209,6 @@ public abstract class AbstractGraphIteratorTest
         /**
          * @see TraversalListener#vertexTraversed(VertexTraversalEvent)
          */
-        @Override
         public void vertexTraversed(VertexTraversalEvent<String> e)
         {
             numComponentVertices++;
@@ -209,7 +217,6 @@ public abstract class AbstractGraphIteratorTest
         /**
          * @see TraversalListener#vertexTraversed(VertexTraversalEvent)
          */
-        @Override
         public void vertexFinished(VertexTraversalEvent<String> e)
         {
             finishString += e.getVertex() + ":";
@@ -221,3 +228,5 @@ public abstract class AbstractGraphIteratorTest
         }
     }
 }
+
+// End AbstractGraphIteratorTest.java

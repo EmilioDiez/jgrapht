@@ -1,33 +1,56 @@
-/*
- * (C) Copyright 2003-2018, by Barak Naveh and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------------------------
+ * ConnectedComponentTraversalEvent.java
+ * -------------------------------------
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
+ *
+ * Original Author:  Barak Naveh
+ * Contributor(s):   -
+ *
+ * $Id: ConnectedComponentTraversalEvent.java 487 2006-07-02 00:53:17Z
+ * perfecthash $
+ *
+ * Changes
+ * -------
+ * 11-Aug-2003 : Initial revision (BN);
+ *
  */
 package org.jgrapht.event;
 
 import java.util.*;
 
+
 /**
  * A traversal event with respect to a connected component.
  *
  * @author Barak Naveh
+ * @since Aug 11, 2003
  */
 public class ConnectedComponentTraversalEvent
-    extends
-    EventObject
+    extends EventObject
 {
+    
+
     private static final long serialVersionUID = 3834311717709822262L;
 
     /**
@@ -40,10 +63,14 @@ public class ConnectedComponentTraversalEvent
      */
     public static final int CONNECTED_COMPONENT_FINISHED = 32;
 
+    
+
     /**
      * The type of this event.
      */
     private int type;
+
+    
 
     /**
      * Creates a new ConnectedComponentTraversalEvent.
@@ -57,6 +84,8 @@ public class ConnectedComponentTraversalEvent
         this.type = type;
     }
 
+    
+
     /**
      * Returns the event type.
      *
@@ -67,3 +96,5 @@ public class ConnectedComponentTraversalEvent
         return type;
     }
 }
+
+// End ConnectedComponentTraversalEvent.java

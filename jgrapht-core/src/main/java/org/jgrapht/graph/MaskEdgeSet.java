@@ -1,96 +1,146 @@
-/*
- * (C) Copyright 2007-2018, by France Telecom and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------------
+ * MaskEdgeSet.java
+ * -------------------------
+ * (C) Copyright 2007-2008, by France Telecom
+ *
+ * Original Author:  Guillaume Boulmier and Contributors.
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 05-Jun-2007 : Initial revision (GB);
+ *
  */
 package org.jgrapht.graph;
 
+import java.util.*;
+
 import org.jgrapht.*;
 import org.jgrapht.util.*;
+import org.jgrapht.util.PrefetchIterator.*;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
 
 /**
  * Helper for {@link MaskSubgraph}.
  *
+ * @author Guillaume Boulmier
+ * @since July 5, 2007
  */
 class MaskEdgeSet<V, E>
-    extends
-    AbstractSet<E>
-    implements
-    Serializable
+    extends AbstractSet<E>
 {
-    private static final long serialVersionUID = 4208908842850100708L;
+    
 
-    private final Graph<V, E> graph;
-    private final Set<E> edgeSet;
-    private final Predicate<V> vertexMask;
-    private final Predicate<E> edgeMask;
+    private Set<E> edgeSet;
+
+    private Graph<V, E> graph;
+
+    private MaskFunctor<V, E> mask;
+
+    private transient TypeUtil<E> edgeTypeDecl = null;
+
+    private int size;
+
+    
 
     public MaskEdgeSet(
-        Graph<V, E> graph, Set<E> edgeSet, Predicate<V> vertexMask, Predicate<E> edgeMask)
+        Graph<V, E> graph,
+        Set<E> edgeSet,
+        MaskFunctor<V, E> mask)
     {
         this.graph = graph;
         this.edgeSet = edgeSet;
-        this.vertexMask = vertexMask;
-        this.edgeMask = edgeMask;
+        this.mask = mask;
+        this.size = -1;
     }
 
+    
+
     /**
-     * {@inheritDoc}
+     * @see java.util.Collection#contains(java.lang.Object)
      */
-    @Override
     public boolean contains(Object o)
     {
-        if (!edgeSet.contains(o)) {
-            return false;
-        }
-        E e = TypeUtil.uncheckedCast(o);
-
-        return !edgeMask.test(e) && !vertexMask.test(graph.getEdgeSource(e))
-            && !vertexMask.test(graph.getEdgeTarget(e));
+        return this.edgeSet.contains(o)
+            && !this.mask.isEdgeMasked(TypeUtil.uncheckedCast(o, edgeTypeDecl));
     }
 
     /**
-     * {@inheritDoc}
+     * @see java.util.Set#iterator()
      */
-    @Override
     public Iterator<E> iterator()
     {
-        return edgeSet
-            .stream()
-            .filter(
-                e -> !edgeMask.test(e) && !vertexMask.test(graph.getEdgeSource(e))
-                    && !vertexMask.test(graph.getEdgeTarget(e)))
-            .iterator();
+        return new PrefetchIterator<E>(new MaskEdgeSetNextElementFunctor());
     }
 
     /**
-     * {@inheritDoc}
+     * @see java.util.Set#size()
      */
-    @Override
     public int size()
     {
-        return (int) edgeSet
-            .stream()
-            .filter(
-                e -> !edgeMask.test(e) && !vertexMask.test(graph.getEdgeSource(e))
-                    && !vertexMask.test(graph.getEdgeTarget(e)))
-            .count();
+        if (this.size == -1) {
+            this.size = 0;
+            for (Iterator<E> iter = iterator(); iter.hasNext();) {
+                iter.next();
+                this.size++;
+            }
+        }
+        return this.size;
     }
 
+    
+
+    private class MaskEdgeSetNextElementFunctor
+        implements NextElementFunctor<E>
+    {
+        private Iterator<E> iter;
+
+        public MaskEdgeSetNextElementFunctor()
+        {
+            this.iter = MaskEdgeSet.this.edgeSet.iterator();
+        }
+
+        public E nextElement()
+            throws NoSuchElementException
+        {
+            E edge = this.iter.next();
+            while (isMasked(edge)) {
+                edge = this.iter.next();
+            }
+            return edge;
+        }
+
+        private boolean isMasked(E edge)
+        {
+            return MaskEdgeSet.this.mask.isEdgeMasked(edge)
+                || MaskEdgeSet.this.mask.isVertexMasked(
+                    MaskEdgeSet.this.graph.getEdgeSource(edge))
+                || MaskEdgeSet.this.mask.isVertexMasked(
+                    MaskEdgeSet.this.graph.getEdgeTarget(edge));
+        }
+    }
 }
+
+// End MaskEdgeSet.java

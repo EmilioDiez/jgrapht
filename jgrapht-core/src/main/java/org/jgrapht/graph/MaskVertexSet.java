@@ -1,78 +1,131 @@
-/*
- * (C) Copyright 2007-2018, by France Telecom and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------------
+ * MaskVertexSet.java
+ * -------------------------
+ * (C) Copyright 2007-2008, by France Telecom
+ *
+ * Original Author:  Guillaume Boulmier and Contributors.
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 05-Jun-2007 : Initial revision (GB);
+ *
  */
 package org.jgrapht.graph;
 
-import org.jgrapht.util.*;
-
-import java.io.*;
 import java.util.*;
-import java.util.function.*;
+
+import org.jgrapht.util.*;
+import org.jgrapht.util.PrefetchIterator.*;
+
 
 /**
  * Helper for {@link MaskSubgraph}.
  *
+ * @author Guillaume Boulmier
+ * @since July 5, 2007
  */
-class MaskVertexSet<V>
-    extends
-    AbstractSet<V>
-    implements
-    Serializable
+class MaskVertexSet<V, E>
+    extends AbstractSet<V>
 {
-    private static final long serialVersionUID = 3751931017141472763L;
+    
 
-    private final Set<V> vertexSet;
-    private final Predicate<V> mask;
+    private MaskFunctor<V, E> mask;
 
-    public MaskVertexSet(Set<V> vertexSet, Predicate<V> mask)
+    private int size;
+
+    private Set<V> vertexSet;
+
+    private transient TypeUtil<V> vertexTypeDecl = null;
+
+    
+
+    public MaskVertexSet(Set<V> vertexSet, MaskFunctor<V, E> mask)
     {
         this.vertexSet = vertexSet;
         this.mask = mask;
+        this.size = -1;
     }
 
+    
+
     /**
-     * {@inheritDoc}
+     * @see java.util.Collection#contains(java.lang.Object)
      */
-    @Override
     public boolean contains(Object o)
     {
-        if (!vertexSet.contains(o)) {
-            return false;
-        }
-        V v = TypeUtil.uncheckedCast(o);
-        return !mask.test(v);
+        return
+            !this.mask.isVertexMasked(TypeUtil.uncheckedCast(o, vertexTypeDecl))
+            && this.vertexSet.contains(o);
     }
 
     /**
-     * {@inheritDoc}
+     * @see java.util.Set#iterator()
      */
-    @Override
     public Iterator<V> iterator()
     {
-        return vertexSet.stream().filter(mask.negate()).iterator();
+        return new PrefetchIterator<V>(new MaskVertexSetNextElementFunctor());
     }
 
     /**
-     * {@inheritDoc}
+     * @see java.util.Set#size()
      */
-    @Override
     public int size()
     {
-        return (int) vertexSet.stream().filter(mask.negate()).count();
+        if (this.size == -1) {
+            this.size = 0;
+            for (Iterator<V> iter = iterator(); iter.hasNext();) {
+                iter.next();
+                this.size++;
+            }
+        }
+        return this.size;
     }
 
+    
+
+    private class MaskVertexSetNextElementFunctor
+        implements NextElementFunctor<V>
+    {
+        private Iterator<V> iter;
+
+        public MaskVertexSetNextElementFunctor()
+        {
+            this.iter = MaskVertexSet.this.vertexSet.iterator();
+        }
+
+        public V nextElement()
+            throws NoSuchElementException
+        {
+            V element = this.iter.next();
+            while (MaskVertexSet.this.mask.isVertexMasked(element)) {
+                element = this.iter.next();
+            }
+            return element;
+        }
+    }
 }
+
+// End MaskVertexSet.java

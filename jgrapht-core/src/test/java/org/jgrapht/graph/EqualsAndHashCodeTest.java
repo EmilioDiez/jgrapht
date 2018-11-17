@@ -1,46 +1,75 @@
-/*
- * (C) Copyright 2012-2018, by Vladimir Kostyukov and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
  */
+/* --------------------------
+ * EqualsAndHashCodeTest.java
+ * --------------------------
+ * (C) Copyright 2012, by Vladimir Kostyukov and Contributors.
+ *
+ * Original Author:  Vladimir Kostyukov
+ * Contributor(s):   -
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 14-Jun-2012 : Initial revision (VK);
+ *
+ */
+
 package org.jgrapht.graph;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jgrapht.*;
-import org.junit.*;
-
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class EqualsAndHashCodeTest
+    extends EnhancedTestCase
 {
-    // ~ Instance fields --------------------------------------------------------
+    //~ Instance fields --------------------------------------------------------
 
     private String v1 = "v1";
     private String v2 = "v2";
     private String v3 = "v3";
     private String v4 = "v4";
 
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * @see junit.framework.TestCase#TestCase(java.lang.String)
+     */
+    public EqualsAndHashCodeTest(String name)
+    {
+        super(name);
+    }
+
     /**
      * Tests equals/hashCode methods for directed graphs.
      */
-    @Test
     public void testDefaultDirectedGraph()
     {
-        Graph<String, DefaultEdge> g1 = new DefaultDirectedGraph<>(DefaultEdge.class);
+        DirectedGraph<String, DefaultEdge> g1 =
+            new DefaultDirectedGraph<String, DefaultEdge>(
+                DefaultEdge.class);
         g1.addVertex(v1);
         g1.addVertex(v2);
         g1.addVertex(v3);
@@ -49,7 +78,9 @@ public class EqualsAndHashCodeTest
         DefaultEdge e23 = g1.addEdge(v2, v3);
         DefaultEdge e31 = g1.addEdge(v3, v1);
 
-        Graph<String, DefaultEdge> g2 = new DefaultDirectedGraph<>(DefaultEdge.class);
+        DirectedGraph<String, DefaultEdge> g2 = 
+             new DefaultDirectedGraph<String, DefaultEdge>(
+                 DefaultEdge.class);
         g2.addVertex(v4);
         g2.addVertex(v3);
         g2.addVertex(v2);
@@ -58,7 +89,9 @@ public class EqualsAndHashCodeTest
         g2.addEdge(v2, v3, e23);
         g2.addEdge(v1, v2, e12);
 
-        Graph<String, DefaultEdge> g3 = new DefaultDirectedGraph<>(DefaultEdge.class);
+        DirectedGraph<String, DefaultEdge> g3 = 
+            new DefaultDirectedGraph<String, DefaultEdge>(
+                DefaultEdge.class);
         g3.addVertex(v4);
         g3.addVertex(v3);
         g3.addVertex(v2);
@@ -75,10 +108,11 @@ public class EqualsAndHashCodeTest
     /**
      * Tests equals/hashCode methods for undirected graphs.
      */
-    @Test
     public void testSimpleGraph()
     {
-        Graph<String, DefaultEdge> g1 = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> g1 =
+            new SimpleGraph<String, DefaultEdge>(
+                DefaultEdge.class);
         g1.addVertex(v1);
         g1.addVertex(v2);
         g1.addVertex(v3);
@@ -87,7 +121,9 @@ public class EqualsAndHashCodeTest
         DefaultEdge e23 = g1.addEdge(v2, v3);
         DefaultEdge e31 = g1.addEdge(v3, v1);
 
-        Graph<String, DefaultEdge> g2 = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> g2 = 
+             new SimpleGraph<String, DefaultEdge>(
+                 DefaultEdge.class);
         g2.addVertex(v4);
         g2.addVertex(v3);
         g2.addVertex(v2);
@@ -96,7 +132,9 @@ public class EqualsAndHashCodeTest
         g2.addEdge(v2, v3, e23);
         g2.addEdge(v1, v2, e12);
 
-        Graph<String, DefaultEdge> g3 = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> g3 = 
+            new SimpleGraph<String, DefaultEdge>(
+                DefaultEdge.class);
         g3.addVertex(v4);
         g3.addVertex(v3);
         g3.addVertex(v2);
@@ -113,24 +151,29 @@ public class EqualsAndHashCodeTest
     /**
      * Tests equals/hashCode methods for graphs with non-Intrusive edges.
      */
-    @Test
     public void testGraphsWithNonIntrusiveEdge()
     {
-        Graph<String, String> g1 = new DefaultDirectedGraph<>(String.class);
+        DirectedGraph<String, String> g1 =
+            new DefaultDirectedGraph<String, String>(
+                String.class);
         g1.addVertex(v1);
         g1.addVertex(v2);
         g1.addVertex(v3);
         g1.addEdge(v1, v2, v1 + v2);
         g1.addEdge(v3, v1, v3 + v1);
 
-        Graph<String, String> g2 = new DefaultDirectedGraph<>(String.class);
+        DirectedGraph<String, String> g2 = 
+             new DefaultDirectedGraph<String, String>(
+                 String.class);
         g2.addVertex(v3);
         g2.addVertex(v2);
         g2.addVertex(v1);
         g2.addEdge(v3, v1, v3 + v1);
         g2.addEdge(v1, v2, v1 + v2);
 
-        Graph<String, String> g3 = new DefaultDirectedGraph<>(String.class);
+        DirectedGraph<String, String> g3 = 
+            new DefaultDirectedGraph<String, String>(
+                String.class);
         g3.addVertex(v3);
         g3.addVertex(v2);
         g3.addVertex(v1);
@@ -147,10 +190,10 @@ public class EqualsAndHashCodeTest
     /**
      * Tests equals/hashCode methods for graphs with multiple edges and loops.
      */
-    @Test
     public void testPseudograph()
     {
-        Graph<String, DefaultEdge> g1 = new Pseudograph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> g1 =
+            new Pseudograph<String, DefaultEdge>(DefaultEdge.class);
         g1.addVertex(v1);
         g1.addVertex(v2);
         g1.addVertex(v3);
@@ -160,7 +203,8 @@ public class EqualsAndHashCodeTest
         DefaultEdge e122 = g1.addEdge(v1, v2);
         DefaultEdge e11 = g1.addEdge(v1, v1);
 
-        Graph<String, DefaultEdge> g2 = new Pseudograph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> g2 =
+            new Pseudograph<String, DefaultEdge>(DefaultEdge.class);
         g2.addVertex(v3);
         g2.addVertex(v2);
         g2.addVertex(v1);
@@ -170,7 +214,8 @@ public class EqualsAndHashCodeTest
         g2.addEdge(v2, v3, e23);
         g2.addEdge(v1, v2, e122);
 
-        Graph<String, DefaultEdge> g3 = new Pseudograph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> g3 =
+            new Pseudograph<String, DefaultEdge>(DefaultEdge.class);
         g3.addVertex(v3);
         g3.addVertex(v2);
         g3.addVertex(v1);
@@ -188,24 +233,29 @@ public class EqualsAndHashCodeTest
     /**
      * Tests equals/hashCode methods for graphs with custom edges.
      */
-    @Test
     public void testGrapshWithCustomEdges()
     {
-        Graph<String, CustomEdge> g1 = new SimpleGraph<>(CustomEdge.class);
+        UndirectedGraph<String, CustomEdge> g1 =
+            new SimpleGraph<String, CustomEdge>(
+                CustomEdge.class);
         g1.addVertex(v1);
         g1.addVertex(v2);
         g1.addVertex(v3);
         g1.addEdge(v1, v2, new CustomEdge("v1-v2"));
         g1.addEdge(v3, v1, new CustomEdge("v3-v1"));
 
-        Graph<String, CustomEdge> g2 = new SimpleGraph<>(CustomEdge.class);
+        UndirectedGraph<String, CustomEdge> g2 =
+            new SimpleGraph<String, CustomEdge>(
+                CustomEdge.class);
         g2.addVertex(v1);
         g2.addVertex(v2);
         g2.addVertex(v3);
         g2.addEdge(v1, v2, new CustomEdge("v1-v2"));
         g2.addEdge(v3, v1, new CustomEdge("v3-v1"));
 
-        Graph<String, CustomEdge> g3 = new SimpleGraph<>(CustomEdge.class);
+        UndirectedGraph<String, CustomEdge> g3 =
+            new SimpleGraph<String, CustomEdge>(
+                CustomEdge.class);
         g3.addVertex(v1);
         g3.addVertex(v2);
         g3.addVertex(v3);
@@ -221,10 +271,9 @@ public class EqualsAndHashCodeTest
     /**
      * Tests equals/hashCode for graphs transformed to weighted.
      */
-    @Test
-    public void testAsWeightedGraphs()
-    {
-        Graph<String, DefaultEdge> g1 = new SimpleGraph<>(DefaultEdge.class);
+    public void testAsWeightedGraphs() {
+        UndirectedGraph<String, DefaultEdge> g1 = 
+            new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
         g1.addVertex(v1);
         g1.addVertex(v2);
         g1.addVertex(v3);
@@ -232,7 +281,8 @@ public class EqualsAndHashCodeTest
         DefaultEdge e23 = g1.addEdge(v2, v3);
         DefaultEdge e31 = g1.addEdge(v3, v1);
 
-        Graph<String, DefaultEdge> g2 = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> g2 = 
+            new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
         g2.addVertex(v1);
         g2.addVertex(v2);
         g2.addVertex(v3);
@@ -240,29 +290,38 @@ public class EqualsAndHashCodeTest
         g2.addEdge(v2, v3, e23);
         g2.addEdge(v3, v1, e31);
 
-        Map<DefaultEdge, Double> weightMap1 = new HashMap<>();
+        Map<DefaultEdge, Double> weightMap1 =
+            new HashMap<DefaultEdge, Double>();
 
         weightMap1.put(e12, 10.0);
         weightMap1.put(e23, 20.0);
         weightMap1.put(e31, 30.0);
 
-        Graph<String, DefaultEdge> g3 = new AsWeightedGraph<>(g1, weightMap1);
+        WeightedGraph<String, DefaultEdge> g3 =
+            new AsWeightedGraph<String, DefaultEdge>(
+                g1, weightMap1);
 
-        Map<DefaultEdge, Double> weightMap2 = new HashMap<>();
+        Map<DefaultEdge, Double> weightMap2 =
+            new HashMap<DefaultEdge, Double>();
 
         weightMap2.put(e12, 10.0);
         weightMap2.put(e23, 20.0);
         weightMap2.put(e31, 30.0);
 
-        Graph<String, DefaultEdge> g4 = new AsWeightedGraph<>(g2, weightMap2);
+        WeightedGraph<String, DefaultEdge> g4 =
+            new AsWeightedGraph<String, DefaultEdge>(
+                g2, weightMap2);
 
-        Map<DefaultEdge, Double> weightMap3 = new HashMap<>();
+        Map<DefaultEdge, Double> weightMap3 =
+            new HashMap<DefaultEdge, Double>();
 
         weightMap3.put(e12, 100.0);
         weightMap3.put(e23, 200.0);
         weightMap3.put(e31, 300.0);
 
-        Graph<String, DefaultEdge> g5 = new AsWeightedGraph<>(g2, weightMap3);
+        WeightedGraph<String, DefaultEdge> g5 =
+            new AsWeightedGraph<String, DefaultEdge>(
+                g2, weightMap3);
 
         assertTrue(g1.equals(g2));
         assertEquals(g2.hashCode(), g1.hashCode());
@@ -277,24 +336,21 @@ public class EqualsAndHashCodeTest
      * Simple custom edge class.
      */
     public static class CustomEdge
-        extends
-        DefaultEdge
+        extends DefaultEdge
     {
         private static final long serialVersionUID = 1L;
         private String label;
 
         public CustomEdge(String label)
         {
-            this.label = label;
+            this.label = label; 
         }
 
-        @Override
         public int hashCode()
         {
             return label.hashCode();
         }
 
-        @Override
         public boolean equals(Object obj)
         {
             if (this == obj) {

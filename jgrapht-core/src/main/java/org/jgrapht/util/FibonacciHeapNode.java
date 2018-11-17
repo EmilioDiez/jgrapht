@@ -1,33 +1,64 @@
-/*
- * (C) Copyright 1999-2018, by Nathan Fiedler and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (barak_naveh@users.sourceforge.net)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* --------------------------
+ * FibonnaciHeapNode.java
+ * --------------------------
+ * (C) Copyright 1999-2008, by Nathan Fiedler and Contributors.
+ *
+ * Original Author:  Nathan Fiedler
+ * Contributor(s):   John V. Sichi
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 03-Sept-2003 : Adapted from Nathan Fiedler (JVS);
+ *
+ *      Name    Date            Description
+ *      ----    ----            -----------
+ *      nf      08/31/97        Initial version
+ *      nf      09/07/97        Removed FibHeapData interface
+ *      nf      01/20/01        Added synchronization
+ *      nf      01/21/01        Made Node an inner class
+ *      nf      01/05/02        Added clear(), renamed empty() to
+ *                              isEmpty(), and renamed printHeap()
+ *                              to toString()
+ *      nf      01/06/02        Removed all synchronization
+ *      JVS     06/24/06        Generics
+ *
  */
 package org.jgrapht.util;
 
 /**
- * Implements a node of the Fibonacci heap. It holds the information necessary for maintaining the
- * structure of the heap. It also holds the reference to the key value (which is used to determine
- * the heap structure).
- * 
- * @param <T> node data type
+ * Implements a node of the Fibonacci heap. It holds the information necessary
+ * for maintaining the structure of the heap. It also holds the reference to the
+ * key value (which is used to determine the heap structure).
  *
  * @author Nathan Fiedler
  */
 public class FibonacciHeapNode<T>
 {
+    
+
     /**
      * Node data.
      */
@@ -54,7 +85,8 @@ public class FibonacciHeapNode<T>
     FibonacciHeapNode<T> right;
 
     /**
-     * true if this node has had a child removed since this node was added to its parent
+     * true if this node has had a child removed since this node was added to
+     * its parent
      */
     boolean mark;
 
@@ -68,15 +100,22 @@ public class FibonacciHeapNode<T>
      */
     int degree;
 
+    
+
     /**
-     * Constructs a new node.
+     * Default constructor. Initializes the right and left pointers, making this
+     * a circular doubly-linked list.
      *
      * @param data data for this node
      */
     public FibonacciHeapNode(T data)
     {
+        right = this;
+        left = this;
         this.data = data;
     }
+
+    
 
     /**
      * Obtain the key for this node.
@@ -90,8 +129,6 @@ public class FibonacciHeapNode<T>
 
     /**
      * Obtain the data for this node.
-     * 
-     * @return the data
      */
     public final T getData()
     {
@@ -103,7 +140,6 @@ public class FibonacciHeapNode<T>
      *
      * @return string representing this object
      */
-    @Override
     public String toString()
     {
         return Double.toString(key);
@@ -111,3 +147,5 @@ public class FibonacciHeapNode<T>
 
     // toString
 }
+
+// End FibonacciHeapNode.java

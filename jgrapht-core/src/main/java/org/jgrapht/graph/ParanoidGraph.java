@@ -1,56 +1,76 @@
-/*
- * (C) Copyright 2007-2018, by John V Sichi and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------
+ * ParanoidGraph.java
+ * -------------------
+ * (C) Copyright 2007-2008, by John V. Sichi and Contributors.
+ *
+ * Original Author:  John V. Sichi
+ * Contributor(s):   -
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 8-Nov-2007 : Initial revision (JVS);
+ *
  */
 package org.jgrapht.graph;
 
-import org.jgrapht.*;
-
 import java.util.*;
 
+import org.jgrapht.*;
+
+
 /**
- * ParanoidGraph provides a way to verify that objects added to a graph obey the standard
- * equals/hashCode contract. It can be used to wrap an underlying graph to be verified. Note that
- * the verification is very expensive, so ParanoidGraph should only be used during debugging.
- *
- * @param <V> the graph vertex type
- * @param <E> the graph edge type
+ * ParanoidGraph provides a way to verify that objects added to a graph obey the
+ * standard equals/hashCode contract. It can be used to wrap an underlying graph
+ * to be verified. Note that the verification is very expensive, so
+ * ParanoidGraph should only be used during debugging.
  *
  * @author John Sichi
+ * @version $Id$
  */
 public class ParanoidGraph<V, E>
-    extends
-    GraphDelegator<V, E>
+    extends GraphDelegator<V, E>
 {
-    private static final long serialVersionUID = 5075284167422166539L;
+    
 
     /**
-     * Create a new paranoid graph.
-     * 
-     * @param g the underlying wrapped graph
      */
+    private static final long serialVersionUID = 5075284167422166539L;
+
+    
+
     public ParanoidGraph(Graph<V, E> g)
     {
         super(g);
     }
 
+    
+
     /**
-     * {@inheritDoc}
+     * @see Graph#addEdge(Object, Object, Object)
      */
-    @Override
     public boolean addEdge(V sourceVertex, V targetVertex, E e)
     {
         verifyAdd(edgeSet(), e);
@@ -58,9 +78,8 @@ public class ParanoidGraph<V, E>
     }
 
     /**
-     * {@inheritDoc}
+     * @see Graph#addVertex(Object)
      */
-    @Override
     public boolean addVertex(V v)
     {
         verifyAdd(vertexSet(), v);
@@ -75,10 +94,14 @@ public class ParanoidGraph<V, E>
             }
             if (o.equals(t) && (o.hashCode() != t.hashCode())) {
                 throw new IllegalArgumentException(
-                    "ParanoidGraph detected objects " + "o1 (hashCode=" + o.hashCode()
-                        + ") and o2 (hashCode=" + t.hashCode() + ") where o1.equals(o2) "
-                        + "but o1.hashCode() != o2.hashCode()");
+                    "ParanoidGraph detected objects "
+                    + "o1 (hashCode=" + o.hashCode()
+                    + ") and o2 (hashCode=" + t.hashCode()
+                    + ") where o1.equals(o2) "
+                    + "but o1.hashCode() != o2.hashCode()");
             }
         }
     }
 }
+
+// End ParanoidGraph.java

@@ -1,58 +1,71 @@
-/*
- * (C) Copyright 2005-2018, by Assaf Lehr and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -----------------
+ * StopWatch.java
+ * -----------------
+ * (C) Copyright 2005-2008, by Assaf Lehr and Contributors.
+ *
+ * Original Author:  Assaf Lehr
+ * Contributor(s):   -
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
  */
 package org.jgrapht.util;
 
-import java.util.concurrent.*;
-
 /**
- * A very simple stop watch.
- * 
- * @author Assaf Lehr
+ * @author Assaf
+ * @since May 30, 2005
  */
 public class StopWatch
 {
-    private long startTime;
+    //~ Instance fields --------------------------------------------------------
 
-    /**
-     * Construct a new stop watch and start it.
-     */
-    public StopWatch()
-    {
-        start();
-    }
+    long beforeTime;
 
-    /**
-     * Restart.
-     */
+    //~ Methods ----------------------------------------------------------------
+
     public void start()
     {
-        this.startTime = System.nanoTime();
+        this.beforeTime = System.currentTimeMillis();
     }
 
-    /**
-     * Get the elapsed time from the last restart.
-     * 
-     * @param timeUnit the time unit
-     * @return the elapsed time in the given time unit
-     */
-    public long getElapsed(TimeUnit timeUnit)
+    public void stopAndReport()
     {
-        return timeUnit.convert(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+        long deltaTime = System.currentTimeMillis() - beforeTime;
+        if (deltaTime > 9999) {
+            double deltaTimeSec = deltaTime / 1000.0;
+            System.out.println(
+                "# Performence: " + deltaTimeSec + " full Seconds");
+        } else {
+            String timeDesc;
+            timeDesc =
+                (deltaTime <= 10) ? "<10ms [less than minumun measurement time]"
+                : String.valueOf(deltaTime);
+            System.out.println("# Performence:  in MiliSeconds:" + timeDesc);
+        }
     }
-
 }
+
+// End StopWatch.java

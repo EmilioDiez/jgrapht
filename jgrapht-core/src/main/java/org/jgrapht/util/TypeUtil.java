@@ -1,42 +1,64 @@
-/*
- * (C) Copyright 2006-2018, by John V Sichi and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -----------------
+ * TypeUtil.java
+ * -----------------
+ * (C) Copyright 2006-2008, by John V. Sichi and Contributors.
+ *
+ * Original Author:  John V. Sichi
+ * Contributor(s):   -
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 07-May-2006 : Initial version (JVS);
  */
 package org.jgrapht.util;
 
 /**
- * TypeUtil isolates type-unsafety so that code which uses it for legitimate reasons can stay
- * warning-free.
+ * TypeUtil isolates type-unsafety so that code which uses it for legitimate
+ * reasons can stay warning-free.
  *
  * @author John V. Sichi
  */
-public class TypeUtil
+public class TypeUtil<T>
 {
+    
+
     /**
      * Casts an object to a type.
      *
      * @param o object to be cast
-     * @param <T> the type of the result
+     * @param typeDecl conveys the target type information; the actual value is
+     * unused and can be null since this is all just stupid compiler tricks
      *
      * @return the result of the cast
      */
     @SuppressWarnings("unchecked")
-    public static <T> T uncheckedCast(Object o)
+    public static <T> T uncheckedCast(Object o, TypeUtil<T> typeDecl)
     {
         return (T) o;
     }
-
 }
+
+// End TypeUtil.java

@@ -1,27 +1,48 @@
-/*
- * (C) Copyright 2013-2018, by Nikolay Ognyanov and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------------
+ * DirectedSimpleCycles.java
+ * -------------------------
+ * (C) Copyright 2013, by Nikolay Ognyanov
+ *
+ * Original Author: Nikolay Ognyanov
+ * Contributor(s) :
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 06-Sep-2013 : Initial revision (NO);
  */
 package org.jgrapht.alg.cycle;
 
 import java.util.*;
 
+import org.jgrapht.*;
+
+
 /**
- * A common interface for classes implementing algorithms for enumeration of the simple cycles of a
- * directed graph.
+ * A common interface for classes implementing algorithms for enumeration of the
+ * simple cycles of a directed graph.
  *
  * @param <V> the vertex type.
  * @param <E> the edge type.
@@ -30,10 +51,37 @@ import java.util.*;
  */
 public interface DirectedSimpleCycles<V, E>
 {
+    
+
     /**
-     * Find the simple cycles of the graph.
+     * Returns the graph on which the simple cycle search algorithm is executed
+     * by this object.
      *
-     * @return The list of all simple cycles. Possibly empty but never <code>null</code>.
+     * @return The graph.
+     */
+    DirectedGraph<V, E> getGraph();
+
+    /**
+     * Sets the graph on which the simple cycle search algorithm is executed by
+     * this object.
+     *
+     * @param graph the graph.
+     *
+     * @throws IllegalArgumentException if the argument is <code>null</code>.
+     */
+    void setGraph(DirectedGraph<V, E> graph);
+
+    /**
+     * Finds the simple cycles of the graph.<br/>
+     * Note that the full algorithm is executed on every call since the graph
+     * may have changed between calls.
+     *
+     * @return The list of all simple cycles. Possibly empty but never <code>
+     * null</code>.
+     *
+     * @throws IllegalArgumentException if the current graph is null.
      */
     List<List<V>> findSimpleCycles();
 }
+
+// End DirectedSimpleCycles.java

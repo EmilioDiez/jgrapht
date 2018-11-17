@@ -1,35 +1,61 @@
-/*
- * (C) Copyright 2013-2018, by Nikolay Ognyanov and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------------
+ * SzwarcfiterLauerSimpleCycles.java
+ * -------------------------
+ * (C) Copyright 2013, by Nikolay Ognyanov
+ *
+ * Original Author: Nikolay Ognyanov
+ * Contributor(s) :
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 06-Sep-2013 : Initial revision (NO);
  */
 package org.jgrapht.alg.cycle;
 
-import org.jgrapht.*;
-import org.jgrapht.alg.connectivity.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.nitoku.NArrayDeque;
+
 
 /**
- * Find all simple cycles of a directed graph using the Schwarcfiter and Lauer's algorithm.
+ * Find all simple cycles of a directed graph using the Schwarcfiter and Lauer's
+ * algorithm.
  *
- * <p>
- * See:<br>
- * J.L.Szwarcfiter and P.E.Lauer, Finding the elementary cycles of a directed graph in $O(n + m)$
- * per cycle, Technical Report Series, #60, May 1974, Univ. of Newcastle upon Tyne, Newcastle upon
- * Tyne, England.
+ * <p/>See:<br/>
+ * J.L.Szwarcfiter and P.E.Lauer, Finding the elementary cycles of a directed
+ * graph in O(n + m) per cycle, Technical Report Series, #60, May 1974, Univ. of
+ * Newcastle upon Tyne, Newcastle upon Tyne, England.
  *
  * @param <V> the vertex type.
  * @param <E> the edge type.
@@ -37,23 +63,26 @@ import java.util.*;
  * @author Nikolay Ognyanov
  */
 public class SzwarcfiterLauerSimpleCycles<V, E>
-    implements
-    DirectedSimpleCycles<V, E>
+    implements DirectedSimpleCycles<V, E>
 {
+    
+
     // The graph.
-    private Graph<V, E> graph;
+    private DirectedGraph<V, E> graph;
 
     // The state of the algorithm.
     private List<List<V>> cycles = null;
-    private V[] iToV = null;
+    private V [] iToV = null;
     private Map<V, Integer> vToI = null;
     private Map<V, Set<V>> bSets = null;
-    private ArrayDeque<V> stack = null;
+    private NArrayDeque<V> stack = null;
     private Set<V> marked = null;
     private Map<V, Set<V>> removed = null;
-    private int[] position = null;
-    private boolean[] reach = null;
+    private int [] position = null;
+    private boolean [] reach = null;
     private List<V> startVertices = null;
+
+    
 
     /**
      * Create a simple cycle finder with an unspecified graph.
@@ -70,36 +99,39 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
      * @throws IllegalArgumentException if the graph argument is <code>
      * null</code>.
      */
-    public SzwarcfiterLauerSimpleCycles(Graph<V, E> graph)
+    public SzwarcfiterLauerSimpleCycles(DirectedGraph<V, E> graph)
     {
-        this.graph = GraphTests.requireDirected(graph, "Graph must be directed");
+        if (graph == null) {
+            throw new IllegalArgumentException("Null graph argument.");
+        }
+        this.graph = graph;
     }
 
+    
+
     /**
-     * Get the graph
-     * 
-     * @return graph
+     * {@inheritDoc}
      */
-    public Graph<V, E> getGraph()
+    @Override public DirectedGraph<V, E> getGraph()
     {
         return graph;
     }
 
     /**
-     * Set the graph
-     * 
-     * @param graph graph
+     * {@inheritDoc}
      */
-    public void setGraph(Graph<V, E> graph)
+    @Override public void setGraph(DirectedGraph<V, E> graph)
     {
-        this.graph = GraphTests.requireDirected(graph, "Graph must be directed");
+        if (graph == null) {
+            throw new IllegalArgumentException("Null graph argument.");
+        }
+        this.graph = graph;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public List<List<V>> findSimpleCycles()
+    @Override public List<List<V>> findSimpleCycles()
     {
         // Just a straightforward implementation of
         // the algorithm.
@@ -107,8 +139,8 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
             throw new IllegalArgumentException("Null graph.");
         }
         initState();
-        KosarajuStrongConnectivityInspector<V, E> inspector =
-            new KosarajuStrongConnectivityInspector<>(graph);
+        StrongConnectivityInspector<V, E> inspector =
+            new StrongConnectivityInspector<V, E>(graph);
         List<Set<V>> sccs = inspector.stronglyConnectedSets();
         for (Set<V> scc : sccs) {
             int maxInDegree = -1;
@@ -145,7 +177,9 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
         }
         Set<V> avRemoved = getRemoved(vV);
         Set<E> edgeSet = graph.outgoingEdgesOf(vV);
-        for (E e : edgeSet) {
+        Iterator<E> avIt = edgeSet.iterator();
+        while (avIt.hasNext()) {
+            E e = avIt.next();
             V wV = graph.getEdgeTarget(e);
             if (avRemoved.contains(wV)) {
                 continue;
@@ -154,15 +188,15 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
             if (!marked.contains(wV)) {
                 boolean gotCycle = cycle(w, q);
                 if (gotCycle) {
-                    foundCycle = true;
+                    foundCycle = gotCycle;
                 } else {
                     noCycle(v, w);
                 }
             } else if (position[w] <= q) {
                 foundCycle = true;
-                List<V> cycle = new ArrayList<>();
+                List<V> cycle = new ArrayList<V>();
                 Iterator<V> it = stack.descendingIterator();
-                V current;
+                V current = null;
                 while (it.hasNext()) {
                     current = it.next();
                     if (wV.equals(current)) {
@@ -221,17 +255,17 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
     @SuppressWarnings("unchecked")
     private void initState()
     {
-        cycles = new ArrayList<>();
-        iToV = (V[]) graph.vertexSet().toArray();
-        vToI = new HashMap<>();
-        bSets = new HashMap<>();
-        stack = new ArrayDeque<>();
-        marked = new HashSet<>();
-        removed = new HashMap<>();
+        cycles = new ArrayList<List<V>>();
+        iToV = (V []) graph.vertexSet().toArray();
+        vToI = new HashMap<V, Integer>();
+        bSets = new HashMap<V, Set<V>>();
+        stack = new NArrayDeque<V>();
+        marked = new HashSet<V>();
+        removed = new HashMap<V, Set<V>>();
         int size = graph.vertexSet().size();
         position = new int[size];
         reach = new boolean[size];
-        startVertices = new ArrayList<>();
+        startVertices = new ArrayList<V>();
 
         for (int i = 0; i < iToV.length; i++) {
             vToI.put(iToV[i], i);
@@ -266,13 +300,25 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
     {
         // B sets are typically not all
         // needed, so instantiate lazily.
-        return bSets.computeIfAbsent(v, k -> new HashSet<>());
+        Set<V> result = bSets.get(v);
+        if (result == null) {
+            result = new HashSet<V>();
+            bSets.put(v, result);
+        }
+        return result;
     }
 
     private Set<V> getRemoved(V v)
     {
         // Removed sets typically not all
         // needed, so instantiate lazily.
-        return removed.computeIfAbsent(v, k -> new HashSet<>());
+        Set<V> result = removed.get(v);
+        if (result == null) {
+            result = new HashSet<V>();
+            removed.put(v, result);
+        }
+        return result;
     }
 }
+
+// End SzwarcfiterLauerSimpleCycles.java

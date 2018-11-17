@@ -1,95 +1,82 @@
-/*
- * (C) Copyright 2003-2018, by Barak Naveh and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* ---------------
+ * Multigraph.java
+ * ---------------
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
+ *
+ * Original Author:  Barak Naveh
+ * Contributor(s):   Christian Hammer
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 05-Aug-2003 : Initial revision (BN);
+ * 06-Aug-2005 : Made generic (CH);
+ * 28-May-2006 : Moved connectivity info from edge to graph (JVS);
+ *
  */
 package org.jgrapht.graph;
 
-import org.jgrapht.graph.builder.*;
-import org.jgrapht.util.*;
+import org.jgrapht.*;
 
-import java.util.function.*;
 
 /**
- * A multigraph. A multigraph is a non-simple undirected graph in which no loops are permitted, but
- * multiple (parallel) edges between any two vertices are. If you're unsure about multigraphs, see:
- * <a href="http://mathworld.wolfram.com/Multigraph.html">
+ * A multigraph. A multigraph is a non-simple undirected graph in which no loops
+ * are permitted, but multiple edges between any two vertices are. If you're
+ * unsure about multigraphs, see: <a
+ * href="http://mathworld.wolfram.com/Multigraph.html">
  * http://mathworld.wolfram.com/Multigraph.html</a>.
- * 
- * @param <V> the graph vertex type
- * @param <E> the graph edge type
- *
  */
 public class Multigraph<V, E>
-    extends
-    AbstractBaseGraph<V, E>
+    extends AbstractBaseGraph<V, E>
+    implements UndirectedGraph<V, E>
 {
-    private static final long serialVersionUID = -8313058939737164595L;
+    
+
+    private static final long serialVersionUID = 3257001055819871795L;
+
+    
 
     /**
-     * Creates a new graph.
+     * Creates a new multigraph.
      *
-     * @param edgeClass class on which to base the edge supplier
+     * @param edgeClass class on which to base factory for edges
      */
     public Multigraph(Class<? extends E> edgeClass)
     {
-        this(null, SupplierUtil.createSupplier(edgeClass), false);
+        this(new ClassBasedEdgeFactory<V, E>(edgeClass));
     }
 
     /**
-     * Creates a new graph.
-     * 
-     * @param vertexSupplier the vertex supplier, can be null
-     * @param edgeSupplier the edge supplier, can be null
-     * @param weighted whether the graph is weighted or not
+     * Creates a new multigraph with the specified edge factory.
+     *
+     * @param ef the edge factory of the new graph.
      */
-    public Multigraph(Supplier<V> vertexSupplier, Supplier<E> edgeSupplier, boolean weighted)
+    public Multigraph(EdgeFactory<V, E> ef)
     {
-        super(
-            vertexSupplier, edgeSupplier,
-            new DefaultGraphType.Builder()
-                .undirected().allowMultipleEdges(true).allowSelfLoops(false).weighted(weighted)
-                .build());
+        super(ef, true, false);
     }
-
-    /**
-     * Create a builder for this kind of graph.
-     * 
-     * @param edgeClass class on which to base factory for edges
-     * @param <V> the graph vertex type
-     * @param <E> the graph edge type
-     * @return a builder for this kind of graph
-     */
-    public static <V, E> GraphBuilder<V, E, ? extends Multigraph<V, E>> createBuilder(
-        Class<? extends E> edgeClass)
-    {
-        return new GraphBuilder<>(new Multigraph<>(edgeClass));
-    }
-
-    /**
-     * Create a builder for this kind of graph.
-     * 
-     * @param edgeSupplier the edge supplier of the new graph
-     * @param <V> the graph vertex type
-     * @param <E> the graph edge type
-     * @return a builder for this kind of graph
-     */
-    public static <V,
-        E> GraphBuilder<V, E, ? extends Multigraph<V, E>> createBuilder(Supplier<E> edgeSupplier)
-    {
-        return new GraphBuilder<>(new Multigraph<>(null, edgeSupplier, false));
-    }
-
 }
+
+// End Multigraph.java

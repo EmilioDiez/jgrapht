@@ -1,33 +1,59 @@
-/*
- * (C) Copyright 2013-2018, by Nikolay Ognyanov and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2008, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* -------------------------
+ * TarjanSimpleCycles.java
+ * -------------------------
+ * (C) Copyright 2013, by Nikolay Ognyanov
+ *
+ * Original Author: Nikolay Ognyanov
+ * Contributor(s) :
+ *
+ * $Id$
+ *
+ * Changes
+ * -------
+ * 06-Sep-2013 : Initial revision (NO);
  */
 package org.jgrapht.alg.cycle;
 
-import org.jgrapht.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.nitoku.NArrayDeque;
+
 
 /**
  * Find all simple cycles of a directed graph using the Tarjan's algorithm.
  *
- * <p>
- * See:<br>
- * R. Tarjan, Enumeration of the elementary circuits of a directed graph, SIAM J. Comput., 2 (1973),
- * pp. 211-216.
+ * <p/>See:<br/>
+ * R. Tarjan, Enumeration of the elementary circuits of a directed graph, SIAM
+ * J. Comput., 2 (1973), pp. 211-216.
  *
  * @param <V> the vertex type.
  * @param <E> the edge type.
@@ -35,17 +61,20 @@ import java.util.*;
  * @author Nikolay Ognyanov
  */
 public class TarjanSimpleCycles<V, E>
-    implements
-    DirectedSimpleCycles<V, E>
+    implements DirectedSimpleCycles<V, E>
 {
-    private Graph<V, E> graph;
+    
+
+    private DirectedGraph<V, E> graph;
 
     private List<List<V>> cycles;
     private Set<V> marked;
-    private ArrayDeque<V> markedStack;
-    private ArrayDeque<V> pointStack;
+    private NArrayDeque<V> markedStack;
+    private NArrayDeque<V> pointStack;
     private Map<V, Integer> vToI;
     private Map<V, Set<V>> removed;
+
+    
 
     /**
      * Create a simple cycle finder with an unspecified graph.
@@ -62,36 +91,39 @@ public class TarjanSimpleCycles<V, E>
      * @throws IllegalArgumentException if the graph argument is <code>
      * null</code>.
      */
-    public TarjanSimpleCycles(Graph<V, E> graph)
+    public TarjanSimpleCycles(DirectedGraph<V, E> graph)
     {
-        this.graph = GraphTests.requireDirected(graph, "Graph must be directed");
+        if (graph == null) {
+            throw new IllegalArgumentException("Null graph argument.");
+        }
+        this.graph = graph;
     }
 
+    
+
     /**
-     * Get the graph
-     * 
-     * @return graph
+     * {@inheritDoc}
      */
-    public Graph<V, E> getGraph()
+    @Override public DirectedGraph<V, E> getGraph()
     {
         return graph;
     }
 
     /**
-     * Set the graph
-     * 
-     * @param graph graph
+     * {@inheritDoc}
      */
-    public void setGraph(Graph<V, E> graph)
+    @Override public void setGraph(DirectedGraph<V, E> graph)
     {
-        this.graph = GraphTests.requireDirected(graph, "Graph must be directed");
+        if (graph == null) {
+            throw new IllegalArgumentException("Null graph argument.");
+        }
+        this.graph = graph;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public List<List<V>> findSimpleCycles()
+    @Override public List<List<V>> findSimpleCycles()
     {
         if (graph == null) {
             throw new IllegalArgumentException("Null graph.");
@@ -127,9 +159,9 @@ public class TarjanSimpleCycles<V, E>
                 getRemoved(vertex).add(currentVertex);
             } else if (comparison == 0) {
                 foundCycle = true;
-                List<V> cycle = new ArrayList<>();
+                List<V> cycle = new ArrayList<V>();
                 Iterator<V> it = pointStack.descendingIterator();
-                V v;
+                V v = null;
                 while (it.hasNext()) {
                     v = it.next();
                     if (start.equals(v)) {
@@ -160,12 +192,12 @@ public class TarjanSimpleCycles<V, E>
 
     private void initState()
     {
-        cycles = new ArrayList<>();
-        marked = new HashSet<>();
-        markedStack = new ArrayDeque<>();
-        pointStack = new ArrayDeque<>();
-        vToI = new HashMap<>();
-        removed = new HashMap<>();
+        cycles = new ArrayList<List<V>>();
+        marked = new HashSet<V>();
+        markedStack = new NArrayDeque<V>();
+        pointStack = new NArrayDeque<V>();
+        vToI = new HashMap<V, Integer>();
+        removed = new HashMap<V, Set<V>>();
         int index = 0;
         for (V v : graph.vertexSet()) {
             vToI.put(v, index++);
@@ -190,6 +222,13 @@ public class TarjanSimpleCycles<V, E>
     {
         // Removed sets typically not all
         // needed, so instantiate lazily.
-        return removed.computeIfAbsent(v, k -> new HashSet<>());
+        Set<V> result = removed.get(v);
+        if (result == null) {
+            result = new HashSet<V>();
+            removed.put(v, result);
+        }
+        return result;
     }
 }
+
+// End TarjanSimpleCycles.java

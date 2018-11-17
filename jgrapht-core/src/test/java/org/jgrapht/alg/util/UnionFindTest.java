@@ -1,27 +1,43 @@
-/*
- * (C) Copyright 2010-2018, by Tom Conerly and Contributors.
- *
+/* ==========================================
  * JGraphT : a free Java graph-theory library
+ * ==========================================
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * Project Info:  http://jgrapht.sourceforge.net/
+ * Project Creator:  Barak Naveh (http://sourceforge.net/users/barak_naveh)
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
+ * (C) Copyright 2003-2010, by Barak Naveh and Contributors.
  *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * This program and the accompanying materials are dual-licensed under
+ * either
+ *
+ * (a) the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation, or (at your option) any
+ * later version.
+ *
+ * or (per the licensee's choosing)
+ *
+ * (b) the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation.
+ */
+/* ------------------------------
+ * UnionFindTest.java
+ * ------------------------------
+ * (C) Copyright 2010-2010, by Tom Conerly and Contributors.
+ *
+ * Original Author:  Tom Conerly
+ * Contributor(s):   -
+ *
+ * Changes
+ * -------
+ * 02-Feb-2010 : Initial revision (TC);
+ *
  */
 package org.jgrapht.alg.util;
 
-import org.junit.*;
-
 import java.util.*;
 
-import static org.junit.Assert.*;
+import junit.framework.*;
+
 
 /**
  * .
@@ -29,17 +45,17 @@ import static org.junit.Assert.*;
  * @author Tom Conerly
  */
 public class UnionFindTest
+    extends TestCase
 {
-    // ~ Methods ----------------------------------------------------------------
+    //~ Methods ----------------------------------------------------------------
 
     /**
      * .
      */
-    @Test
     public void testUnionFind()
     {
         TreeSet<String> set = new TreeSet<String>();
-        String[] strs = { "aaa", "bbb", "ccc", "ddd", "eee" };
+        String [] strs = { "aaa", "bbb", "ccc", "ddd", "eee" };
         ArrayList<ArrayList<String>> sets = new ArrayList<ArrayList<String>>();
         for (String str : strs) {
             set.add(str);
@@ -47,42 +63,27 @@ public class UnionFindTest
             sets.get(sets.size() - 1).add(str);
         }
         UnionFind<String> uf = new UnionFind<String>(set);
-        assertEquals(5, uf.size());
-        assertEquals(5, uf.numberOfSets());
         testIdentical(strs, sets, uf);
 
         uf.union(strs[0], strs[1]);
-        assertEquals(4, uf.numberOfSets());
         union(sets, strs[0], strs[1]);
         testIdentical(strs, sets, uf);
-        assertTrue(uf.inSameSet("aaa", "bbb"));
-        assertFalse(uf.inSameSet("bbb", "ccc"));
 
         uf.union(strs[2], strs[3]);
-        assertEquals(3, uf.numberOfSets());
         union(sets, strs[2], strs[3]);
         testIdentical(strs, sets, uf);
 
         uf.union(strs[2], strs[4]);
-        assertEquals(2, uf.numberOfSets());
         union(sets, strs[2], strs[4]);
         testIdentical(strs, sets, uf);
 
         uf.union(strs[2], strs[4]);
-        assertEquals(2, uf.numberOfSets());
         union(sets, strs[2], strs[4]);
         testIdentical(strs, sets, uf);
 
         uf.union(strs[0], strs[4]);
-        assertEquals(1, uf.numberOfSets());
         union(sets, strs[0], strs[4]);
         testIdentical(strs, sets, uf);
-
-        uf.addElement("fff");
-        assertEquals(2, uf.numberOfSets());
-        assertEquals(6, uf.size());
-        uf.reset();
-        assertEquals(6, uf.numberOfSets());
     }
 
     private void union(ArrayList<ArrayList<String>> sets, String a, String b)
@@ -116,7 +117,9 @@ public class UnionFindTest
     }
 
     private void testIdentical(
-        String[] universe, ArrayList<ArrayList<String>> sets, UnionFind<String> uf)
+        String [] universe,
+        ArrayList<ArrayList<String>> sets,
+        UnionFind<String> uf)
     {
         for (String a : universe) {
             for (String b : universe) {
@@ -127,3 +130,5 @@ public class UnionFindTest
         }
     }
 }
+
+// End UnionFindTest.java
